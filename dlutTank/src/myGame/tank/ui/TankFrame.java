@@ -115,7 +115,7 @@ public class TankFrame extends JFrame {
 					for(int i=0;i<gamemap.getTankNums();i++)
 						{
 							tanksLabel.get(i).setHP(1);
-							tanksLabel.get(i).setSpeed(3);
+							tanksLabel.get(i).setSpeed((int)(Math.random()*5)+2);
 							tanksLabel.get(i).setTankLocation(gamemap.getTankPoints()[i]);
 							tanksLabel.get(i).setTankIcon();
 							setTankcurrent(tanksLabel.get(i));
@@ -169,7 +169,7 @@ public class TankFrame extends JFrame {
 					mapPanel.remove(hosterTank);
 					mapPanel.remove(gueetTank);
 					repaint();
-					option.setMessage("LOSERYOU WIN!!!!!");
+					option.setMessage("LOSER!!!!!!!!!!");
 					option.createDialog("SB").setVisible(true);
 				}
 				else{
