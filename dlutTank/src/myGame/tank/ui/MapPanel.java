@@ -1,8 +1,12 @@
 package myGame.tank.ui;
 
+import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Image;
+
+import javax.swing.JFrame;
 import javax.swing.JPanel;
+
 import myGame.tank.image.GameImage;
 
 /**
@@ -30,7 +34,7 @@ public class MapPanel extends JPanel{
 	public MapPanel(int[][] map,GameImage imgs)
 	{
 		bg = imgs.getBgIcon().getImage();
-		wall = imgs.getWallIcon().getImage();
+		wall = imgs.getBgIcon().getImage();
 		stell = imgs.getSteelIcon().getImage();
 		edage = imgs.getEdgeIcon().getImage();
 		WIDTH = bg.getWidth(this);
@@ -75,5 +79,22 @@ public class MapPanel extends JPanel{
 		System.out.print("bgH"+wall.getHeight(this));
 	}
 	
-	
+	public static void main(String[] args)
+	{
+		EventQueue.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				JFrame game = new JFrame();
+
+				Maps maps = new Maps(4,35,35);
+				game.add(new MapPanel(maps.getGameMap(),new GameImage()));
+				game.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				game.setTitle("是男人就打一百层");
+				game.setVisible(true);
+				
+			}
+		});
+		
+	}
 }

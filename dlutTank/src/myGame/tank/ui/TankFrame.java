@@ -40,12 +40,14 @@ public class TankFrame extends JFrame {
 	private volatile boolean[] keyPress;    //按键的重复按下判断；
 	private ExecutorService pool;			//线程池
 	private GameSound sounds;				//游戏声音素材
+	private Maps gamemap;
 	
 	public TankFrame() {
 		
 		/*实例化需要的类*/
 		imgs = new GameImage();
-		map = Maps.Map1.clone();
+		gamemap = new Maps(4,40,40);
+		map = gamemap.getGameMap().clone();
 		currentMap = new int[map[0].length*imgs.getBgIcon().getIconHeight()][map.length*imgs.getBgIcon().getIconWidth()];
 		keyPress = new boolean[10];
 		pool = Executors.newCachedThreadPool();
@@ -71,16 +73,16 @@ public class TankFrame extends JFrame {
 
 		mapPanel.setLayout(null);
 		
-		tanksLabel.add(new TankLabel(36, 250, 4,3,TankDir.DOWN, TankType.HOSTER_TANK, imgs));//添加主坦克
+		tanksLabel.add(new TankLabel(gamemap.getTankPoints()[0].x, gamemap.getTankPoints()[0].y, 4,3,TankDir.DOWN, TankType.HOSTER_TANK, imgs));//添加主坦克
 		hosterTank = tanksLabel.get(0);
-		tanksLabel.add(new TankLabel(100, 250, 4,3,TankDir.DOWN, TankType.GUEET_TANK, imgs));	//添加副坦克
+		tanksLabel.add(new TankLabel(gamemap.getTankPoints()[1].x, gamemap.getTankPoints()[1].x, 4,3,TankDir.DOWN, TankType.GUEET_TANK, imgs));	//添加副坦克
 		gueetTank = tanksLabel.get(1);
-		for(int i = 2;i<8;i++)
+		for(int i = 2;i<4;i++)
 		{
-			tanksLabel.add(new TankLabel((i+1)*36, 40,i+5,i,TankDir.DOWN, TankType.AI_TANK, imgs));
+			tanksLabel.add(new TankLabel(gamemap.getTankPoints()[i].x, gamemap.getTankPoints()[i].x,i+5,i,TankDir.DOWN, TankType.AI_TANK, imgs));
 			pool.submit(new AiThread(tanksLabel.get(i)));	//每辆坦克都有各自的线程在处理
 		}
-		for(int i=0;i<tanksLabel.size();i++)
+		for(int i=0;i<4;i++)
 		{
 			mapPanel.add(tanksLabel.get(i));
 			setTankcurrent(tanksLabel.get(i));
