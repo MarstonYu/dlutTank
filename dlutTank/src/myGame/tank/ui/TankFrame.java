@@ -12,6 +12,7 @@ import javax.swing.*;
 
 import myGame.tank.image.GameImage;
 import myGame.tank.object.BulletLabel;
+import myGame.tank.object.Maps;
 import myGame.tank.object.TankDir;
 import myGame.tank.object.TankLabel;
 import myGame.tank.object.TankType;
@@ -41,73 +42,117 @@ public class TankFrame extends JFrame {
 	private ExecutorService pool;			//线程池
 	private GameSound sounds;				//游戏声音素材
 	private Maps gamemap;
+	private int runningNums;
+	private boolean playing = true;
 	
+
+	/**
+	* 创建一个新的实例 TankFrame.
+	*
+	*/
 	public TankFrame() {
 		
-		/*实例化需要的类*/
+		/*初始化变量*/
 		imgs = new GameImage();
-		gamemap = new Maps(4,40,40);
-		map = gamemap.getGameMap().clone();
+		gamemap = new Maps((int)(Math.random()*5)+3,40,40);
+		map = gamemap.getGameMap();
 		currentMap = new int[map[0].length*imgs.getBgIcon().getIconHeight()][map.length*imgs.getBgIcon().getIconWidth()];
 		keyPress = new boolean[10];
 		pool = Executors.newCachedThreadPool();
-		tanksLabel = Collections.synchronizedList(new ArrayList<TankLabel>(6));
+		tanksLabel = Collections.synchronizedList(new ArrayList<TankLabel>(7));
 		sounds = new GameSound();
 		mapPanel = new  MapPanel(map,imgs);
 		
+		setLocation(100, 100);
+		setLayout(null);
 		/*按键判断标准初始化*/
 		for(int i=0;i<keyPress.length;i++)
 				keyPress[i]=false;
-		/*可行域初始化*/
-		for(int i=0;i<currentMap.length;i++)
-			for(int j=0;j<currentMap[i].length;j++)
-				if(map[j/16][i/16] == 0)
-					currentMap[i][j] = 0;
-				else if(map[j/16][i/16] == 1)
-					currentMap[i][j] = 1;
-				else if(map[j/16][i/16] == 2)
-					currentMap[i][j] = 2;
-				else if(map[j/16][i/16] == 1)
-					currentMap[i][j] = 3;
-		
-
-		mapPanel.setLayout(null);
-		
-		tanksLabel.add(new TankLabel(gamemap.getTankPoints()[0].x, gamemap.getTankPoints()[0].y, 4,3,TankDir.DOWN, TankType.HOSTER_TANK, imgs));//添加主坦克
+			
+		tanksLabel.add(new TankLabel(0,0, 0, 1,1,TankDir.DOWN, TankType.HOSTER_TANK, imgs));//添加主坦克
 		hosterTank = tanksLabel.get(0);
-		tanksLabel.add(new TankLabel(gamemap.getTankPoints()[1].x, gamemap.getTankPoints()[1].x, 4,3,TankDir.DOWN, TankType.GUEET_TANK, imgs));	//添加副坦克
+		tanksLabel.add(new TankLabel(1,0, 0, 1,1,TankDir.DOWN, TankType.GUEET_TANK, imgs));	//添加副坦克
 		gueetTank = tanksLabel.get(1);
-		for(int i = 2;i<4;i++)
-		{
-			tanksLabel.add(new TankLabel(gamemap.getTankPoints()[i].x, gamemap.getTankPoints()[i].x,i+5,i,TankDir.DOWN, TankType.AI_TANK, imgs));
-			pool.submit(new AiThread(tanksLabel.get(i)));	//每辆坦克都有各自的线程在处理
-		}
-		for(int i=0;i<4;i++)
-		{
-			mapPanel.add(tanksLabel.get(i));
-			setTankcurrent(tanksLabel.get(i));
-		}
+		for(int i = 2;i<7;i++)
+			tanksLabel.add(new TankLabel(i,0, 0,3,1,TankDir.DOWN, TankType.AI_TANK, imgs));
 		
-		mapPanel.add(tanksLabel.get(0));
 		this.addKeyListener(new KeyAction(hosterTank,gueetTank));
-		add(mapPanel);
 		setSize(mapPanel.getWidth()+18,mapPanel.getHeight()+40);
 		
-		/*游戏监控线程，结束失败的判定*/
+		gamemap.setUsing(false);
+		/*关卡初始化*/
+		pool.submit(new Thread()
+		{
+			public void run ()
+			{
+				while(true)
+				{
+					if(gamemap.isUsing())
+					{
+						System.out.println("playing");
+						try {
+							sleep(1000);
+						} catch (InterruptedException e) {
+							// TODO 自动生成的 catch 块
+							e.printStackTrace();
+						}
+					}
+					else if(!gamemap.isUsing())
+					{
+						System.out.println("not playing");
+					sounds.palyBgm();
+					gamemap = new Maps((int)(Math.random()*5)+3,40,40);
+					map = gamemap.getGameMap();
+					mapPanel.setMap(map);
+					/*可行域初始化*/
+					for(int i=0;i<currentMap.length;i++)
+						for(int j=0;j<currentMap[i].length;j++)
+							if(map[j/16][i/16] == 0)
+								currentMap[i][j] = 0;
+							else if(map[j/16][i/16] == 1)
+								currentMap[i][j] = 1;
+							else 	currentMap[i][j] = 2;
+					for(int i=0;i<gamemap.getTankNums();i++)
+						{
+							tanksLabel.get(i).setHP(1);
+							tanksLabel.get(i).setSpeed(3);
+							tanksLabel.get(i).setTankLocation(gamemap.getTankPoints()[i]);
+							tanksLabel.get(i).setTankIcon();
+							setTankcurrent(tanksLabel.get(i));
+							mapPanel.add(tanksLabel.get(i));
+							if(i>1)
+								pool.submit(new AiThread(tanksLabel.get(i)));
+						}
+					add(mapPanel);
+					runningNums = gamemap.getTankNums();
+					repaint();
+					gamemap.setUsing(true);
+					}
+				
+				}
+			}
+		});
+		/*关卡结束判定*/
 		pool.submit(new Thread()
 		{
 			public void run ()
 			{
 				JOptionPane option = new JOptionPane();
-				sounds.palyBgm();
-				while((gueetTank.getHP()>0||hosterTank.getHP()>0)&&TankLabel.getRUNINGNUMS()>1)
+				try {
+					sleep(3000);
+				} catch (InterruptedException e1) {
+					// TODO 自动生成的 catch 块
+					e1.printStackTrace();
+				}
+				while(true){			
+				while((gueetTank.getHP()>0||hosterTank.getHP()>0)&&runningNums>2)
 				{
-					if(hosterTank.getHP() == 0)
+					if(hosterTank.getHP() <= 0)
 					{
 					mapPanel.remove(hosterTank);
 					repaint();
 					}
-					else if(gueetTank.getHP() == 0)
+					else if(gueetTank.getHP() <= 0)
 					{
 						mapPanel.remove(gueetTank);
 						repaint();
@@ -119,34 +164,48 @@ public class TankFrame extends JFrame {
 						e.printStackTrace();
 					}
 				}
-				if(hosterTank.getHP() == 0&&gueetTank.getHP() == 0)
+				if(hosterTank.getHP() <= 0&&gueetTank.getHP() <= 0)
 				{
 					mapPanel.remove(hosterTank);
 					mapPanel.remove(gueetTank);
 					repaint();
-					option.setMessage("SB YOU WIN!!!!!");
+					option.setMessage("LOSERYOU WIN!!!!!");
 					option.createDialog("SB").setVisible(true);
 				}
 				else{
 					mapPanel.remove(hosterTank);
 					mapPanel.remove(gueetTank);
 					repaint();
-					option.setMessage("SB");
+					option.setMessage("YOU WIN!!!!!!!!!!");
 					option.createDialog("SB").setVisible(true);
-				}
-
+				}	
+				for(int i =0;i<gamemap.getTankNums();i++)
+					tanksLabel.get(i).setHP(0);
 				sounds.stopBgm();
+				gamemap.setUsing(false);
+				try {
+					sleep(2000);
+				} catch (InterruptedException e) {
+					// TODO 自动生成的 catch 块
+					e.printStackTrace();
+				}
+				setPlaying(false);
 			}
+			}
+
 		});
 	}
 	
 	
-	/*
-	 * Ai线程
-	 * 内容有点赘余
-	 * 
-	 */
-		class AiThread extends Thread
+
+	/**
+	* @ClassName: AiThread
+	* @Description: TODO(ai坦克线程)
+	* @author 小明君
+	* @date 2015年7月7日
+	*
+	*/
+	class AiThread extends Thread
 	{
 		private TankLabel tank;
 		private BulletLabel bull;
@@ -249,7 +308,7 @@ public class TankFrame extends JFrame {
 				for(int j=0;j<tank.getDim().height;j++)
 					currentMap[tank.getX()+i][tank.getY()+j] = 1;
 			mapPanel.remove(tank);
-			TankLabel.setRUNINGNUMS(TankLabel.getRUNINGNUMS()-1);
+			runningNums--;
 			repaint();
 			sounds.palyDuang();
 			try {
@@ -262,10 +321,14 @@ public class TankFrame extends JFrame {
 			
 		}
 	}
-	/*
-	 * 子弹线程
-	 * 
-	 */
+
+	/**
+	* @ClassName: BullentThread
+	* @Description: TODO(子弹线程)
+	* @author 小明君
+	* @date 2015年7月7日
+	*
+	*/
 	class BullentThread extends Thread
 	{
 		private BulletLabel bullet;
@@ -291,10 +354,14 @@ public class TankFrame extends JFrame {
 		}
 	}
 	
-	/*
-	 * 键盘监听器
-	 *具体去查api
-	 */
+
+	/**
+	* @ClassName: KeyAction
+	* @Description: TODO(按键触发事件)
+	* @author 小明君
+	* @date 2015年7月7日
+	*
+	*/
 	class KeyAction extends  KeyAdapter
 	{
 		TankLabel  hoster;
@@ -683,6 +750,13 @@ public class TankFrame extends JFrame {
 	 * 坦克行动处理，包括移动，以及可行域的设置
 	 * 
 	 */
+	/**
+	* @Title: tankAction
+	* @Description: TODO(坦克行为)
+	* @param @param tankPanel    参数
+	* @return void    返回类型
+	* @throws
+	*/
 	private void tankAction(TankLabel tankPanel)
 	{
 			int x,y;
@@ -745,9 +819,14 @@ public class TankFrame extends JFrame {
 			}
 	}
 	
-	/*
-	 * 子弹行动处理
-	 */
+
+	/**
+	* @Title: bullentAction
+	* @Description: TODO(子弹行为)
+	* @param @param bulllaLabel    参数
+	* @return void    返回类型
+	* @throws
+	*/
 	private void bullentAction(BulletLabel bulllaLabel)
 	{
 		int x = bulllaLabel.getX();
@@ -769,6 +848,7 @@ public class TankFrame extends JFrame {
 							System.out.println("00"+currentMap[x+8][y-1]);
 						}
 					}
+
 					bulllaLabel.setNotFlying();
 				}
 				break;
@@ -784,6 +864,7 @@ public class TankFrame extends JFrame {
 						if(tanksLabel.get(currentMap[x+8][y+bulllaLabel.getDim().height+1]-TankLabel.MIN_ID).getTankType() != bulllaLabel.getTankType())
 							tanksLabel.get(currentMap[x+8][y+bulllaLabel.getDim().height+1]-TankLabel.MIN_ID).delHP();
 					}
+
 					bulllaLabel.setNotFlying();
 				}
 				break;
@@ -799,6 +880,7 @@ public class TankFrame extends JFrame {
 						if(tanksLabel.get(currentMap[x-1][y+8]-TankLabel.MIN_ID).getTankType() != bulllaLabel.getTankType())
 							tanksLabel.get(currentMap[x-1][y+8]-TankLabel.MIN_ID).delHP();
 					}
+
 					bulllaLabel.setNotFlying();
 				}
 				break;
@@ -816,6 +898,7 @@ public class TankFrame extends JFrame {
 							tanksLabel.get(currentMap[x+bulllaLabel.getDim().width+1][y+8]-TankLabel.MIN_ID).delHP();
 						}
 					}
+
 					bulllaLabel.setNotFlying();
 				}
 				break;
@@ -827,6 +910,13 @@ public class TankFrame extends JFrame {
 		
 	}
 	
+	/**
+	* @Title: setTankcurrent
+	* @Description: TODO(设置坦克作用域)
+	* @param @param tank    参数
+	* @return void    返回类型
+	* @throws
+	*/
 	private void setTankcurrent(TankLabel tank)
 	{
 		for(int i=tank.getX();i<tank.getX()+tank.getDim().width;i++)
@@ -841,6 +931,20 @@ public class TankFrame extends JFrame {
 				currentMap[tank.getX()+tank.getDim().width-1][j] = tank.getId();
 			}
 		
+	}
+
+	/**
+	* @return playing
+	*/
+	public boolean isPlaying() {
+		return playing;
+	}
+
+	/**
+	* @param playing the playing to set
+	*/
+	private void setPlaying(boolean playing) {
+		this.playing = playing;
 	}
 
 

@@ -8,6 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import myGame.tank.image.GameImage;
+import myGame.tank.object.Maps;
 
 /**
  * 地图画板
@@ -20,6 +21,14 @@ public class MapPanel extends JPanel{
 	private static final long serialVersionUID = -3873526261044826371L;
 
 	private int[][] map;
+
+	public int[][] getMap() {
+		return map;
+	}
+
+	public void setMap(int[][] map) {
+		this.map = map;
+	}
 
 	private Image bg;
 	private Image wall;
@@ -34,12 +43,14 @@ public class MapPanel extends JPanel{
 	public MapPanel(int[][] map,GameImage imgs)
 	{
 		bg = imgs.getBgIcon().getImage();
-		wall = imgs.getBgIcon().getImage();
-		stell = imgs.getSteelIcon().getImage();
+		wall = imgs.getWallIcon().getImage();
+		stell = imgs.getWallIcon().getImage();
 		edage = imgs.getEdgeIcon().getImage();
 		WIDTH = bg.getWidth(this);
 		HEIGHT = bg.getHeight(this);
 		
+		setSize(WIDTH*map.length,WIDTH*map.length);
+		setLocation(0, 0);
 		this.map =map;
 	}
 	
@@ -71,30 +82,7 @@ public class MapPanel extends JPanel{
 		return (map.length)*(WIDTH);
 	}
 	
-	public MapPanel()
-	{
-		System.out.print("bgW"+bg.getWidth(this));
-		System.out.print("bgH"+bg.getHeight(this));
-		System.out.print("bgW"+wall.getWidth(this));
-		System.out.print("bgH"+wall.getHeight(this));
-	}
-	
-	public static void main(String[] args)
-	{
-		EventQueue.invokeLater(new Runnable() {
-			
-			@Override
-			public void run() {
-				JFrame game = new JFrame();
 
-				Maps maps = new Maps(4,35,35);
-				game.add(new MapPanel(maps.getGameMap(),new GameImage()));
-				game.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				game.setTitle("是男人就打一百层");
-				game.setVisible(true);
-				
-			}
-		});
-		
-	}
+	
+
 }

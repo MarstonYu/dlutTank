@@ -4,7 +4,7 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 
-import myGame.tank.ui.MapPanel;
+
 import myGame.tank.ui.TankFrame;
 
 public class Main {

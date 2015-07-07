@@ -2,6 +2,7 @@ package myGame.tank.object;
 
 
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.Rectangle;
 
 import javax.swing.JLabel;
@@ -37,12 +38,12 @@ public class TankLabel extends JLabel{
 	
 	protected  int speed = 1000;	//坦克速度，越小越快,不能为负
 	
+
 	protected GameImage imgs;		//图片库
+
 	
-	private static int RUNINGNUMS = 0;	//游戏运行中的坦克数量
 	
-	
-	public TankLabel(int x,int y,int speed,int hp,TankDir dir,TankType type,GameImage imgs)
+	public TankLabel(int id,int x,int y,int speed,int hp,TankDir dir,TankType type,GameImage imgs)
 	{
 
 			this.x = x;
@@ -53,16 +54,10 @@ public class TankLabel extends JLabel{
 			this.imgs = imgs;
 			this.speed = speed;
 			this.dim = new Dimension(imgs.getUserTankIcon(dir).getIconWidth(),imgs.getUserTankIcon(dir).getIconHeight());
-			this.id = MIN_ID+this.getRUNINGNUMS();
-			this.setRUNINGNUMS(this.getRUNINGNUMS() + 1); 
+			this.id = MIN_ID+id;
 			
 			setSize(this.getDim());
-			if(type.equals(TankType.HOSTER_TANK) )
-				setIcon(imgs.getUserTankIcon(dir));
-			else if(type.equals(TankType.GUEET_TANK))
-				setIcon(imgs.getGueetTankIcon(dir));
-			else if(type.equals(TankType.AI_TANK))
-				setIcon(imgs.getAiTankIcon(dir));
+			setTankIcon();
 			
 			setLocation(x, y);
 	}
@@ -112,7 +107,9 @@ public class TankLabel extends JLabel{
 	{
 		return speed;
 	}
-	
+	public void setSpeed(int speed) {
+		this.speed = speed;
+	}
 	public int getId()
 	{
 		return  id;
@@ -126,13 +123,19 @@ public class TankLabel extends JLabel{
 		return dim;
 	}
 
-	public static int getRUNINGNUMS() {
-		return RUNINGNUMS;
+	public void setTankLocation(Point p) {
+		setLocation(p);
+		this.x = p.x;
+		this.y = p.y;
 	}
 
-	public static void setRUNINGNUMS(int rUNINGNUMS) {
-		RUNINGNUMS = rUNINGNUMS;
+	public void setTankIcon()
+	{
+	if(type.equals(TankType.HOSTER_TANK) )
+		setIcon(imgs.getUserTankIcon(dir));
+	else if(type.equals(TankType.GUEET_TANK))
+		setIcon(imgs.getGueetTankIcon(dir));
+	else if(type.equals(TankType.AI_TANK))
+		setIcon(imgs.getAiTankIcon(dir));
 	}
-
-	
 }
