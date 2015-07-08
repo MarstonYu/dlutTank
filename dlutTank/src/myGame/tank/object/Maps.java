@@ -92,7 +92,7 @@ public class Maps {
 		for(int i=0;i<halfMap.length;i++)
 			for(int j=0;j<halfMap[i].length;j++)
 			{
-				halfMap[i][j]=(int)(Math.random()*2+1);
+				halfMap[i][j]=(int)(Math.random()*3+1);
 			}
 			
 		for(int i=0;i<halfMap.length;i++)
@@ -126,13 +126,8 @@ public class Maps {
 				if(reation[i]!=0)
 				{
 					p = getRandomDir(halfMap,reation[i],currentPoint[i].x,currentPoint[i].y);
-					
-					if(p.x ==-1)
-					{
-						reation[i] = 0;
-						num--;
-					}
-					else if(halfMap[p.x][p.y] == reation[i])
+
+					if(halfMap[p.x][p.y] == reation[i])
 					{
 						currentPoint[i].x = p.x;
 						currentPoint[i].y = p.y;
@@ -191,34 +186,43 @@ public class Maps {
 	*/
 	private Point getRandomDir(int[][]halfMap, int id,int x,int y)
 	{
-		int i=-1,j=-1;
+		int i,j;
+		int c;
 		System.out.println("int"+x+" "+y);
-		if(		(halfMap[x+1][y] == 0||halfMap[x+1][y]==id) &&
-				(halfMap[x][y+1] == 0||halfMap[x][y+1]==id) &&
-				(halfMap[x-1][y] == 0||halfMap[x-1][y]==id)	&&
-				(halfMap[x][y-1] == 0||halfMap[x][y-1]==id) )
-		{
-			if(halfMap[x+1][y+1] !=0)
-				{
-					i=x+1;
-					j=y+1;
-				}
-			else if(halfMap[x+1][y-1] !=0)
-			{
-					i=x+1;
-					j=y-1;
-			}
-			
-			return new Point(i,j);
-		}
+//		if(		(halfMap[x+1][y] == 0||halfMap[x+1][y]==id) &&
+//				(halfMap[x][y+1] == 0||halfMap[x][y+1]==id) &&
+//				(halfMap[x-1][y] == 0||halfMap[x-1][y]==id)	&&
+//				(halfMap[x][y-1] == 0||halfMap[x][y-1]==id) )
+//		{
+//			while(true)
+//			{
+//				c = (int)(Math.random()*4);
+//			if(c == 0 && halfMap[x+1][y+1] !=0)
+//				{
+//					i=x+1;
+//					j=y+1;
+//				}
+//			else if(c == 1 && halfMap[x+1][y-1] !=0)
+//			{
+//					i=x+1;
+//					j=y-1;
+//			}
+//			else if(c == 1 && halfMap[x+1][y-1] !=0)
+//			{
+//				
+//			}
+//			else if(c == 1 && halfMap[x+1][y-1] !=0)
+//			
+//			return new Point(i,j);
+//			}
+//		}
 		while(true)
 		{
-			
-			int c = (int)(Math.random()*4);
+			c = (int)(Math.random()*4);
 			System.out.println(c+" "+x+" "+y+" "+":"+halfMap[x+1][y]+":"+halfMap[x][y+1]+":"+halfMap[x-1][y]+":"+halfMap[x][y-1]+":"+halfMap[x][y]);
 			if(c == 0)
 			{
-				if(halfMap[x+1][y]!=0&&halfMap[x+1][y]!=id)
+				if(halfMap[x+1][y]!=0)
 				{
 					i = x+1;
 					j=y;
@@ -227,7 +231,7 @@ public class Maps {
 			}
 			else if(c == 1)
 			{
-				if(halfMap[x][y+1]!=0&&halfMap[x][y+1]!=id)
+				if(halfMap[x][y+1]!=0)
 				{
 					i = x;
 					j=y+1;
@@ -235,7 +239,7 @@ public class Maps {
 				}
 			}else if(c == 2)
 			{
-				if(halfMap[x-1][y]!=0&&halfMap[x-1][y]!=id)
+				if(halfMap[x-1][y]!=0)
 				{
 					i = x-1;
 					j=y;
@@ -243,7 +247,7 @@ public class Maps {
 				}
 			}else if(c == 3)
 			{
-				if(halfMap[x][y-1]!=0&&halfMap[x][y-1]!=id)
+				if(halfMap[x][y-1]!=0)
 				{
 					i = x;
 					j=y-1;

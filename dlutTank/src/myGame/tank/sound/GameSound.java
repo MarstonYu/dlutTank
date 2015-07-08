@@ -30,15 +30,15 @@ public class GameSound {
 			e.printStackTrace();
 		}
 	}
-	public void palyBgm()
+	public void playBgm()
 	{
 		AudioPlayer.player.start(bg);
 	}
-	public void palyDuang()
+	public void playDuang()
 	{
 		AudioPlayer.player.start(duang);
 	}
-	public void palyBiu()
+	public void playBiu()
 	{
 		AudioPlayer.player.start(biu);
 	}

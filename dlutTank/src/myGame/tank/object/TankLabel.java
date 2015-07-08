@@ -133,7 +133,7 @@ public class TankLabel extends JLabel{
 	{
 	if(type.equals(TankType.HOSTER_TANK) )
 		setIcon(imgs.getUserTankIcon(dir));
-	else if(type.equals(TankType.GUEET_TANK))
+	else if(type.equals(TankType.GUEST_TANK))
 		setIcon(imgs.getGueetTankIcon(dir));
 	else if(type.equals(TankType.AI_TANK))
 		setIcon(imgs.getAiTankIcon(dir));

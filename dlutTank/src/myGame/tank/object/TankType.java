@@ -9,5 +9,5 @@ package myGame.tank.object;
  *
  */
 public enum TankType {
-	HOSTER_TANK,GUEET_TANK,AI_TANK
+	HOSTER_TANK,GUEST_TANK,AI_TANK
 }

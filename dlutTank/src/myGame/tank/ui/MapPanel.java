@@ -44,7 +44,7 @@ public class MapPanel extends JPanel{
 	{
 		bg = imgs.getBgIcon().getImage();
 		wall = imgs.getWallIcon().getImage();
-		stell = imgs.getWallIcon().getImage();
+		stell = imgs.getSteelIcon().getImage();
 		edage = imgs.getEdgeIcon().getImage();
 		WIDTH = bg.getWidth(this);
 		HEIGHT = bg.getHeight(this);
