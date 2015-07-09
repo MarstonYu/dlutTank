@@ -1,13 +1,11 @@
 package myGame.tank.ui;
 
-import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.locks.Lock;
 
 import javax.swing.*;
 

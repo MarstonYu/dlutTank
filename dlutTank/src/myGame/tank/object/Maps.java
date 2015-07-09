@@ -1,7 +1,6 @@
 package myGame.tank.object;
 
 import java.awt.Point;
-import java.util.Random;
 
 /**
  * µØÍ¼´¢´æÇøÀà

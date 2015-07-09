@@ -1,14 +1,11 @@
 package myGame.tank.ui;
 
-import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Image;
 
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import myGame.tank.image.GameImage;
-import myGame.tank.object.Maps;
 
 /**
  * µØÍ¼»­°å
