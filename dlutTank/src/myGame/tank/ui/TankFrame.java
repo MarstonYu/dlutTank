@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.locks.Lock;
 
 import javax.swing.*;
 
@@ -34,16 +35,15 @@ public class TankFrame extends JFrame {
 	MapPanel mapPanel;				//背景地图
 	GameImage imgs;					//游戏图片集
 	private int[][] map;			//用到的地图
-	private volatile int[][] currentMap;	//当前地图可行域
+	private  int[][] currentMap;	//当前地图可行域
 	List<TankLabel> tanksLabel;				//坦克的列表（数组）
 	TankLabel	hosterTank;
 	TankLabel	gueetTank;
 	private volatile boolean[] keyPress;    //按键的重复按下判断；
 	private ExecutorService pool;			//线程池
 	private GameSound sounds;				//游戏声音素材
-	private Maps gamemap;
-	private int runningNums;
-
+	private Maps gamemap;					//地图对象
+	private int runningNums;				//运行中的坦克数
 
 	/**
 	* 创建一个新的实例 TankFrame.
@@ -159,7 +159,7 @@ public class TankFrame extends JFrame {
 						repaint();
 					}
 					try {
-						sleep(1000);
+						sleep(100);
 					} catch (InterruptedException e) {
 						// TODO 自动生成的 catch 块
 						e.printStackTrace();
@@ -665,7 +665,7 @@ public class TankFrame extends JFrame {
 					{
 						public void run()
 						{
-							sounds.playBiu();
+							sounds.playDuang();
 							
 							try {
 								sleep(100);
@@ -673,7 +673,7 @@ public class TankFrame extends JFrame {
 								// TODO 自动生成的 catch 块
 								e.printStackTrace();
 							}
-							sounds.stopBiu();
+							sounds.stopDuang();
 						}
 					});
 					pool.submit(new Thread()
@@ -756,7 +756,7 @@ public class TankFrame extends JFrame {
 	* @return void    返回类型
 	* @throws
 	*/
-	private void tankAction(TankLabel tankPanel)
+	private synchronized void tankAction(TankLabel tankPanel)
 	{
 			int x,y;
 			x=tankPanel.getX();
@@ -826,7 +826,7 @@ public class TankFrame extends JFrame {
 	* @return void    返回类型
 	* @throws
 	*/
-	private void bullentAction(BulletLabel bulllaLabel)
+	private synchronized void bullentAction(BulletLabel bulllaLabel)
 	{
 		int x = bulllaLabel.getX();
 		int y = bulllaLabel.getY();
@@ -916,7 +916,7 @@ public class TankFrame extends JFrame {
 	* @return void    返回类型
 	* @throws
 	*/
-	private void setTankcurrent(TankLabel tank,boolean isRemove)
+	private synchronized void setTankcurrent(TankLabel tank,boolean isRemove)
 	{
 		if(!isRemove)
 		{

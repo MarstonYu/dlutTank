@@ -67,7 +67,6 @@ public class Maps {
 		setTankPoints(new Point[tanknums]);
 		
 		createMap();
-		  System.out.print("ssssss");
 
 	}
 
@@ -81,7 +80,7 @@ public class Maps {
 	private void createMap()
 	{
 		
-		int[] reation = new int[tankNums];
+		int[] reation = new int[tankNums];	//连通关系数组
 		int num = tankNums;
 		Point[] currentPoint = new Point[tankNums];
 		for(int i = 0;i<currentPoint.length;i++ )
@@ -106,19 +105,18 @@ public class Maps {
 			halfMap[halfMap[0].length-1][j]=0;
 		}
 		
-		for(int i =0;i<reation.length;i++)		//连通关系
+		for(int i =0;i<reation.length;i++)		//连通关系,初始化坦克出生点
 			{
-				reation[i] = i+10;
-				currentPoint[i].x = (int)(Math.random()*((halfMap[0].length/currentPoint.length-2)))+halfMap[0].length/currentPoint.length+1;
+				reation[i] = i+10;		//连通图关系数组，为10+i说明目前还未和别的坦克连通，-1为连通
+				currentPoint[i].x =(int)(Math.random()*(halfMap.length-2))+1;
 				currentPoint[i].y =  (int)(Math.random()*(halfMap.length-2))+1;
 				 tankPoints[i].x = currentPoint[i].x;
 				 tankPoints[i].y = currentPoint[i].y;
 				halfMap[currentPoint[i].x][currentPoint[i].y] = 1;
-				System.out.println(currentPoint[i].x+" "+currentPoint[i].y);
 			}
 		
 		/*
-		 * 一直拓展到连通子图个数为1
+		 * 一直拓展到连通子图个数为1，每次每个子图走一步，子图停止的条件为连接上比他“大”的子图
 		 */
 		while(num>1)
 		{
@@ -188,38 +186,9 @@ public class Maps {
 	{
 		int i,j;
 		int c;
-		System.out.println("int"+x+" "+y);
-//		if(		(halfMap[x+1][y] == 0||halfMap[x+1][y]==id) &&
-//				(halfMap[x][y+1] == 0||halfMap[x][y+1]==id) &&
-//				(halfMap[x-1][y] == 0||halfMap[x-1][y]==id)	&&
-//				(halfMap[x][y-1] == 0||halfMap[x][y-1]==id) )
-//		{
-//			while(true)
-//			{
-//				c = (int)(Math.random()*4);
-//			if(c == 0 && halfMap[x+1][y+1] !=0)
-//				{
-//					i=x+1;
-//					j=y+1;
-//				}
-//			else if(c == 1 && halfMap[x+1][y-1] !=0)
-//			{
-//					i=x+1;
-//					j=y-1;
-//			}
-//			else if(c == 1 && halfMap[x+1][y-1] !=0)
-//			{
-//				
-//			}
-//			else if(c == 1 && halfMap[x+1][y-1] !=0)
-//			
-//			return new Point(i,j);
-//			}
-//		}
 		while(true)
 		{
 			c = (int)(Math.random()*4);
-			System.out.println(c+" "+x+" "+y+" "+":"+halfMap[x+1][y]+":"+halfMap[x][y+1]+":"+halfMap[x-1][y]+":"+halfMap[x][y-1]+":"+halfMap[x][y]);
 			if(c == 0)
 			{
 				if(halfMap[x+1][y]!=0)
